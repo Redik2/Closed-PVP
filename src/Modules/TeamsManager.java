@@ -14,6 +14,7 @@ import mindustry.world.blocks.storage.CoreBlock.CoreBuild;
 
 public class TeamsManager {
     static Team spectatorTeam = Team.get(255);
+    static String teamNamePrefix = "423563563465252team#";
 
     public static void init()
     {
@@ -34,10 +35,10 @@ public class TeamsManager {
             for (Team team : Team.all)
             {
                 if (team.id < 10) continue;
-                if (team.data().cores.size == 0 && !team.name.startsWith("team"))
+                if (team.data().cores.size == 0 && !team.name.startsWith(teamNamePrefix))
                 {
                     killTeam(team);
-                    team.name = "team#" + Integer.toString(team.id);
+                    team.name = teamNamePrefix + Integer.toString(team.id);
                 }
             }
         }, 0, 0.1f);

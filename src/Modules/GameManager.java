@@ -15,7 +15,6 @@ import mindustry.content.Planets;
 import mindustry.game.Gamemode;
 import mindustry.game.Rules;
 import mindustry.game.Team;
-import mindustry.gen.Groups;
 import mindustry.maps.Map;
 import mindustry.maps.MapException;
 import mindustry.net.WorldReloader;
@@ -31,22 +30,21 @@ public class GameManager {
 
         Events.on(CustomEvents.ZoneClosed.class, event -> {
             ArrayList<Team> activeTeams = new ArrayList<>();
+            ZoneManager.stopZoneClosing();
             for (Team team : Team.all)
             {
-                if (team.active()) activeTeams.add(team);
+                if (team.active() && !team.name.startsWith(TeamsManager.teamNamePrefix)) activeTeams.add(team);
             }
 
             if (activeTeams.size() == 1)
             {
-                ZoneManager.stopZoneClosing();
                 Timer.schedule(() -> GameManager.reload(), 10);
-                Groups.player.forEach(player -> {
-                    mindustry.gen.Call.infoMessage(player.con(), LocalizationManager.getFormatted("gameover.team_wins", player, activeTeams.get(0).coloredName()));
-                });
+                UIManager.infoMessage("gameover.team_wins", activeTeams.get(0).coloredName());
             }
-            else if (activeTeams.isEmpty())
+            else
             {
-                GameManager.reload();
+                Timer.schedule(() -> GameManager.reload(), 10);
+                UIManager.infoMessage("gameover.no_wins");
             }
         });
     }
@@ -99,6 +97,11 @@ public class GameManager {
                 logic.reset();
 
                 world.loadMap(result, result.rules(customRules));
+
+                for (Team team : Team.all)
+                {
+                    team.name = TeamsManager.teamNamePrefix + Integer.toString(team.id);
+                }
                 
                 ZoneManager.stopZoneClosing();
                 ZoneManager.resetZone();

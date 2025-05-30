@@ -29,8 +29,19 @@ public class UIManager {
     public static void chatMessage(String key, Object... args)
     {
         Groups.player.forEach(player -> {
-            // Call.sendMessage(player.con(), LocalizationManager.getFormatted("new_team_spawn_notification", player, team.coloredName()));
             Call.sendMessage(player.con(), LocalizationManager.getFormatted(key, player, args), "", null);
+        });
+    }
+
+    public static void infoMessage(String key, Player player, Object... args)
+    {
+        Call.infoMessage(player.con(), LocalizationManager.getFormatted(key, player, args));
+    }
+
+    public static void infoMessage(String key, Object... args)
+    {
+        Groups.player.forEach(player -> {
+            Call.infoMessage(player.con(), LocalizationManager.getFormatted(key, player, args));
         });
     }
 }
