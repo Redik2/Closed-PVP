@@ -20,7 +20,7 @@ public class LocalizationManager {
     private static final String server_info_prefix = "[accent]\uE837[standard]";
     private static final String server_warn_prefix = "[orange]\uE810";
     private static final String server_err_prefix = "[red]⚠";
-    private static final String standart_color = "[#bfbfbf]";
+    private static final String standard_color = "[#bfbfbf]";
     private static final String accent_color = "[#ffd37f]";
 
     public static void init() {
@@ -80,7 +80,7 @@ public class LocalizationManager {
             // Форматируем строку, подставляя аргументы в плейсхолдеры {0}, {1} и т.д.
             String formattedMessage = MessageFormat.format(pattern, args);
             // Замена тегов на цвета и символы для стандартизации типовых сообщений
-            return formattedMessage.replace("[error]", server_err_prefix).replace("[warn]", server_warn_prefix).replace("[info]", server_info_prefix).replace("[standart]", standart_color).replace("[accent]", accent_color);
+            return formattedMessage.replace("[error]", server_err_prefix).replace("[warn]", server_warn_prefix).replace("[info]", server_info_prefix).replace("[standard]", standard_color).replace("[accent]", accent_color);
         } catch (IllegalArgumentException e) {
             Log.err("Failed to format string for key '@' (lang: @): @", key, player.locale(), e.getMessage());
             return pattern; // Возвращаем неформатированную строку в случае ошибки

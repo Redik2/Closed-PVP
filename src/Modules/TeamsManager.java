@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import arc.Events;
+import mindustry.content.Blocks;
 import mindustry.game.EventType;
 import mindustry.game.Team;
+import mindustry.gen.Call;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
+import mindustry.world.blocks.storage.CoreBlock.CoreBuild;
 
 public class TeamsManager {
     static Team spectatorTeam = Team.get(255);
@@ -20,6 +23,24 @@ public class TeamsManager {
 
             player.team(playerCache.team);
         });
+
+        arc.util.Timer.schedule(() -> {
+            Groups.player.forEach(player -> {
+                if (!player.team().active()) player.team(spectatorTeam);
+            });
+        }, 0, 0.1f);
+
+        arc.util.Timer.schedule(() -> {
+            for (Team team : Team.all)
+            {
+                if (team.id < 10) continue;
+                if (team.data().cores.size == 0 && !team.name.startsWith("team"))
+                {
+                    killTeam(team);
+                    team.name = "team#" + Integer.toString(team.id);
+                }
+            }
+        }, 0, 0.1f);
     }
     
     public static Team getNewTeam()
@@ -28,6 +49,7 @@ public class TeamsManager {
 
         for (Team team : Team.all)
         {
+            if (team.id < 10) continue;
             if (!team.active()) emptyTeams.add(team);
         }
 
@@ -36,17 +58,21 @@ public class TeamsManager {
 
     public static void killTeam(Team team)
     {
-        //team.data().destroyToDerelict();
-        //team.data().units.forEach(unit -> {
-        //    unit.kill();
-        //});
-        for (PlayerCache cache : CacheManager.playerCache.values())
+        team.data().destroyToDerelict();
+        team.data().units.forEach(unit -> {
+           unit.kill();
+        });
+        UIManager.chatMessage("chat_notification.team_destroyed", team.coloredName());
+    }
+
+    public static void cancelTeam(Team team)
+    {
+        for (CoreBuild core : team.cores())
         {
-            if (cache.team == team) cache.team = TeamsManager.spectatorTeam;
-            Groups.player.forEach(player -> {
-                player.clearUnit();
-                player.team(TeamsManager.spectatorTeam);
-            });
+            core.tile().setNet(Blocks.air);
         }
+        team.data().units.forEach(unit -> {
+           Call.unitDespawn(unit);
+        });
     }
 }

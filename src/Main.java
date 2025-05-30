@@ -1,8 +1,10 @@
 import Modules.CacheManager;
 import Modules.CoresManager;
+import Modules.GameManager;
 import Modules.LocalizationManager;
-import Modules.MapManager;
+import Modules.MenuManager;
 import Modules.TeamsManager;
+import Modules.ZoneManager;
 import arc.util.CommandHandler;
 import arc.util.Log;
 import mindustry.Vars;
@@ -18,11 +20,17 @@ public class Main extends Plugin
     public void init()
     {
 
-        MapManager.init();
+        GameManager.init();
         CoresManager.init();
         CacheManager.init();
         TeamsManager.init();
         LocalizationManager.init();
+        ZoneManager.init();
+        MenuManager.init();
+
+        Administration.Config.serverName.set(LocalizationManager.get("server.name", "en"));
+        Administration.Config.desc.set(LocalizationManager.get("server.desc", "en"));
+        Vars.netServer.admins.setPlayerLimit(10);
     }
 
     //register commands that run on the server
@@ -34,10 +42,7 @@ public class Main extends Plugin
                 return;
             }
 
-            Administration.Config.serverName.set(LocalizationManager.get("server.name", "en"));
-            Administration.Config.desc.set(LocalizationManager.get("server.desc", "en"));
-
-            MapManager.reload();
+            GameManager.reload();
             Vars.netServer.openServer();
         });
     }
